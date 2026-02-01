@@ -1,28 +1,15 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import create_db_engine
 from app.models.activity import Activity
 from datetime import datetime
+from app.schemas.activity import ActivityCreate, ActivityUpdate, ActivityOut
 
 router = APIRouter(prefix="/activities", tags=["Activities"])
 
-@router.post("/")
-def create_activity(
-    lead_id: int,
-    company_name: str,
-    # company_id: int,
-    action_type: str,
-    result: str,
-    db: Session = Depends(create_db_engine)
-):
-    activity = Activity(
-        lead_id=lead_id,
-        company_name=company_name,
-        # company_id=company_id,
-        action_type=action_type,
-        result=result,
-        date=datetime.utcnow()
-    )
+@router.post("/", response_model=ActivityOut)
+def create_activity(payload: ActivityCreate, db: Session = Depends(create_db_engine)):
+    activity = Activity(**payload.model_dump())
     db.add(activity)
     db.commit()
     db.refresh(activity)
@@ -31,3 +18,17 @@ def create_activity(
 @router.get("/")
 def list_activities(db: Session = Depends(create_db_engine)):
     return db.query(Activity).all()
+
+
+@router.patch("/{activity_id}", response_model=ActivityOut)
+def update_activity(activity_id: int, payload: ActivityUpdate, db: Session = Depends(create_db_engine)):
+    activity = db.get(Activity, activity_id)
+    if not activity:
+        raise HTTPException(status_code=404, detail="Activity not found")
+
+    for k, v in payload.model_dump(exclude_unset=True).items():
+        setattr(activity, k, v)
+
+    db.commit()
+    db.refresh(activity)
+    return activity
