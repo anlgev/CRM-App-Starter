@@ -15,7 +15,7 @@ def create_activity(payload: ActivityCreate, db: Session = Depends(create_db_eng
     db.refresh(activity)
     return activity
 
-@router.get("/")
+@router.get("/", response_model=list[ActivityOut])
 def list_activities(db: Session = Depends(create_db_engine)):
     return db.query(Activity).all()
 

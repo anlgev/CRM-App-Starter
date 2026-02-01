@@ -16,6 +16,8 @@ class ActivityCreate(BaseModel):
 
 
 class ActivityUpdate(BaseModel):
+    lead_id: Optional[int] = None
+    company_name: Optional[str] = None
     action_type: Optional[ActivityAction] = None
     result: Optional[ActivityResult] = None
     interested_person: Optional[str] = None

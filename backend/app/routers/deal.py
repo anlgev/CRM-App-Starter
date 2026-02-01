@@ -2,37 +2,46 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import create_db_engine
 from app.models.deal import Deal
+from app.schemas.deal import DealCreate, DealUpdate, DealOut
 
 router = APIRouter(prefix="/deals", tags=["Deals"])
 
-@router.post("/")
-def create_deal(
-    company_name: str,
-    lead_id: int,
-    # company_id: int,
-    status: str,
-    estimated_value: float | None = None,
-    db: Session = Depends(create_db_engine)
-):
-    deal = Deal(
-        company_name=company_name,
-        lead_id=lead_id,
-        # company_id=company_id,
-        status=status,
-        estimated_value=estimated_value
-    )
+
+@router.post("/", response_model=DealOut)
+def create_deal(payload: DealCreate, db: Session = Depends(create_db_engine)):
+    deal = Deal(**payload.model_dump())
     db.add(deal)
     db.commit()
     db.refresh(deal)
     return deal
 
-@router.get("/")
+
+@router.get("/", response_model=list[DealOut])
 def list_deals(db: Session = Depends(create_db_engine)):
     return db.query(Deal).all()
 
-@router.get("/{deal_id}")
+
+@router.get("/{deal_id}", response_model=DealOut)
 def get_deal(deal_id: int, db: Session = Depends(create_db_engine)):
-    deal = db.query(Deal).get(deal_id)
+    deal = db.get(Deal, deal_id)
     if not deal:
         raise HTTPException(status_code=404, detail="Deal not found")
+    return deal
+
+
+@router.patch("/{deal_id}", response_model=DealOut)
+def update_deal(
+    deal_id: int,
+    payload: DealUpdate,
+    db: Session = Depends(create_db_engine)
+):
+    deal = db.get(Deal, deal_id)
+    if not deal:
+        raise HTTPException(status_code=404, detail="Deal not found")
+
+    for key, value in payload.model_dump(exclude_unset=True).items():
+        setattr(deal, key, value)
+
+    db.commit()
+    db.refresh(deal)
     return deal
