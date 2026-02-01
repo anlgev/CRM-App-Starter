@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from app.database import get_db
+from app.database import create_db_engine
 from app.models.activity import Activity
 from datetime import datetime
 
@@ -8,15 +8,17 @@ router = APIRouter(prefix="/activities", tags=["Activities"])
 
 @router.post("/")
 def create_activity(
-    company_id: int,
+    lead_id: int,
+    company_name: str,
+    # company_id: int,
     action_type: str,
     result: str,
-    deal_id: int | None = None,
-    db: Session = Depends(get_db)
+    db: Session = Depends(create_db_engine)
 ):
     activity = Activity(
-        company_id=company_id,
-        deal_id=deal_id,
+        lead_id=lead_id,
+        company_name=company_name,
+        # company_id=company_id,
         action_type=action_type,
         result=result,
         date=datetime.utcnow()
@@ -27,5 +29,5 @@ def create_activity(
     return activity
 
 @router.get("/")
-def list_activities(db: Session = Depends(get_db)):
+def list_activities(db: Session = Depends(create_db_engine)):
     return db.query(Activity).all()

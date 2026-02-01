@@ -1,5 +1,6 @@
 from app.database import Base
-from app.models.company import Company
+# from app.models.company import Company
 from app.models.deal import Deal
 from app.models.activity import Activity
 from app.models.user import User
+from app.models.lead import Lead

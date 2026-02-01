@@ -6,9 +6,9 @@ class Activity(Base):
     __tablename__ = "activities"
 
     id = Column(Integer, primary_key=True, index=True)
-    company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
-    deal_id = Column(Integer, ForeignKey("deals.id"), nullable=True)
-
+    # company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
+    lead_id = Column(Integer, ForeignKey("leads.id"), nullable=False)
+    company_name = Column(String, nullable=False)
     date = Column(DateTime(timezone=True), nullable=False)
     action_type = Column(String, nullable=False)
     interested_person = Column(String, nullable=True)

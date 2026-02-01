@@ -6,7 +6,9 @@ class Deal(Base):
     __tablename__ = "deals"
 
     id = Column(Integer, primary_key=True, index=True)
-    company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
+    # company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
+    company_name = Column(String, nullable=False)
+    lead_id = Column(Integer, ForeignKey("leads.id"), nullable=False)
 
     status = Column(String, nullable=False)
     work_type = Column(String, nullable=True)
