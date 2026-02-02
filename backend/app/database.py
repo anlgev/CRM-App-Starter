@@ -23,6 +23,14 @@ def create_db_engine():
 engine = create_db_engine()
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
 
 
 # DATABASE_URL = os.getenv("DATABASE_URL")
