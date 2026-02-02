@@ -33,7 +33,7 @@ def get_deal(deal_id: int, db: Session = Depends(get_db)):
 def update_deal(
     deal_id: int,
     payload: DealUpdate,
-    db: Session = Depends(create_db_engine)
+    db: Session = Depends(get_db)
 ):
     deal = db.get(Deal, deal_id)
     if not deal:
