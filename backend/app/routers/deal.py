@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.database import create_db_engine
+from app.database import get_db
 from app.models.deal import Deal
 from app.schemas.deal import DealCreate, DealUpdate, DealOut
 
@@ -8,7 +8,7 @@ router = APIRouter(prefix="/deals", tags=["Deals"])
 
 
 @router.post("/", response_model=DealOut)
-def create_deal(payload: DealCreate, db: Session = Depends(create_db_engine)):
+def create_deal(payload: DealCreate, db: Session = Depends(get_db)):
     deal = Deal(**payload.model_dump())
     db.add(deal)
     db.commit()
@@ -17,12 +17,12 @@ def create_deal(payload: DealCreate, db: Session = Depends(create_db_engine)):
 
 
 @router.get("/", response_model=list[DealOut])
-def list_deals(db: Session = Depends(create_db_engine)):
+def list_deals(db: Session = Depends(get_db)):
     return db.query(Deal).all()
 
 
 @router.get("/{deal_id}", response_model=DealOut)
-def get_deal(deal_id: int, db: Session = Depends(create_db_engine)):
+def get_deal(deal_id: int, db: Session = Depends(get_db)):
     deal = db.get(Deal, deal_id)
     if not deal:
         raise HTTPException(status_code=404, detail="Deal not found")

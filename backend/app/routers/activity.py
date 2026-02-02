@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.database import create_db_engine
+from app.database import get_db
 from app.models.activity import Activity
 from datetime import datetime
 from app.schemas.activity import ActivityCreate, ActivityUpdate, ActivityOut
@@ -8,7 +8,7 @@ from app.schemas.activity import ActivityCreate, ActivityUpdate, ActivityOut
 router = APIRouter(prefix="/activities", tags=["Activities"])
 
 @router.post("/", response_model=ActivityOut)
-def create_activity(payload: ActivityCreate, db: Session = Depends(create_db_engine)):
+def create_activity(payload: ActivityCreate, db: Session = Depends(get_db)):
     activity = Activity(**payload.model_dump())
     db.add(activity)
     db.commit()
@@ -16,12 +16,12 @@ def create_activity(payload: ActivityCreate, db: Session = Depends(create_db_eng
     return activity
 
 @router.get("/", response_model=list[ActivityOut])
-def list_activities(db: Session = Depends(create_db_engine)):
+def list_activities(db: Session = Depends(get_db)):
     return db.query(Activity).all()
 
 
 @router.patch("/{activity_id}", response_model=ActivityOut)
-def update_activity(activity_id: int, payload: ActivityUpdate, db: Session = Depends(create_db_engine)):
+def update_activity(activity_id: int, payload: ActivityUpdate, db: Session = Depends(get_db)):
     activity = db.get(Activity, activity_id)
     if not activity:
         raise HTTPException(status_code=404, detail="Activity not found")
