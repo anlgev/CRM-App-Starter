@@ -13,3 +13,6 @@ postgres_data/
 
 # OS
 .DS_Store
+
+# Streamlit
+frontend/streamlit_app/.env
