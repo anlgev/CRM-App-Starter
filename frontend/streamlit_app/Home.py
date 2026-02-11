@@ -7,4 +7,9 @@ prime_layout(title="🏠 Dashboard")
 st.markdown("### Hoş geldin 👋")
 st.info("Bu sayfa v1'de özet gösterecek. (Lead sayısı, aktif deal'lar, bu haftaki activity vb.)")
 
-api.health("api ok")
+from core.api import health
+
+try:
+    st.success(f"API OK: {health()}")
+except Exception as e:
+    st.error(f"API bağlantısı yok: {e}")
