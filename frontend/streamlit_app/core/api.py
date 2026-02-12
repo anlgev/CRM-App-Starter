@@ -41,3 +41,9 @@ def update_lead(lead_id: int, payload: dict) -> dict:
     r = requests.patch(_url(f"/leads/{lead_id}"), json=payload, timeout=TIMEOUT)
     r.raise_for_status()
     return r.json()
+
+
+def get_lead(lead_id: int) -> dict:
+    r = requests.get(_url(f"/leads/{lead_id}"), timeout=TIMEOUT)
+    r.raise_for_status()
+    return r.json()
